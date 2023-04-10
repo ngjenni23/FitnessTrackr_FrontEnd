@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getUserRoutines } from "../api";
+import { getUserRoutines, deleteRoutine, deleteRoutineActivity } from "../api";
 import { useNavigate } from "react-router";
 
 const MyRoutines = ({token, setToken, user}) => {
@@ -15,9 +15,10 @@ const MyRoutines = ({token, setToken, user}) => {
         fetchMyRoutines();
     }, []);
 
-    useEffect(() => {
-        if (!user)
-    })
+   const handleDelete = async (routineId) => {
+    const result = await deleteRoutine(routineId);
+    
+   }
 }
 
 export default MyRoutines

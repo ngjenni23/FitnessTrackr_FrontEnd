@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getPublicRoutines } from "../api";
 
+
+//add update funciton
 const Routines = ({token}) => {
     const [routines, setRoutines] = useState([]);
     const [selectRoutine, setSelectRoutine] = useState(null);
