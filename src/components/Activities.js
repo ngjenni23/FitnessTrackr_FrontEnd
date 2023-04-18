@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createActivity, getAllActivities, updateActivity } from "../api";
 
 const Activities = (props) => {
-    const { allActivities, setAllActivities, isLoggedIn } = props;
+    const { allActivities, setAllActivities } = props;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
 

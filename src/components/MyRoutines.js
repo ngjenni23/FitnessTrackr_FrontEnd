@@ -19,7 +19,7 @@ const MyRoutines = (props) => {
         setMyRoutines(result);
     };
     fetchMyRoutines();
-    }, [loggedInUser]);
+    }, [loggedInUser, setMyRoutines]);
 
     const handleDeleteRoutine = async(routineId) => {
         await deleteRoutine(routineId);
