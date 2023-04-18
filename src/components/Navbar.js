@@ -1,26 +1,18 @@
 import React, { useState } from "react";
-import { BrowserRouter, Link } from "react-router-dom";
-import {
-    Activities,
-    Routines,
-    MyRoutines,
-    Register,
-    Login
-} from './index'
+import { Link } from "react-router-dom";
 
-const Navbar = ({token, setToken}) => {
-    const [user, setUser] = useState();
+const Navbar = (props) => {
+    const {isLoggedIn} = props;
     return (
-    <>    
-        <BrowserRouter>
+    <> 
             <div className='navContainer'>
-                <Link to="/activitites">Activities</Link>
-                <Link to="/routines">Routines</Link>
-                <Link to="/myRoutines">My Routines</Link>
-                <Link to="/register">Register</Link>
-                <Link to="/login">Login</Link>
+                <h1 className="link"><Link to='/Activities'>Activities</Link></h1>
+                <h1 className="link"><Link to='/Routines'>Routines</Link></h1>
+                <h1 className="link"><Link to='/MyRoutines'>My Routines</Link></h1>
+                {!isLoggedIn ? '' : <h1 className="link"><Link to='/MyRoutines'>My Routines</Link></h1>}
+                <h1 className="link"><Link to='/Register'>Register</Link></h1>
+                <h1 className="link"><Link to='/Login'>Login</Link></h1>
             </div>
-        </BrowserRouter>
     </>
     )
 }

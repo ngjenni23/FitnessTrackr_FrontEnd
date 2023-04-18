@@ -23,7 +23,7 @@ export const registerUser = async(username, password) => {
 }
 
 //  POST /users/login
-export const loginUser = async(username, password) => {
+export const loginUser = async(credentials) => {
     try{
         const resp = await fetch(`${API}/users/login`, {
             method: 'POST',
@@ -31,8 +31,7 @@ export const loginUser = async(username, password) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username,
-                password
+                credentials
             })
         })
         const result = await resp.json();
@@ -64,7 +63,7 @@ export const getMyData = async() => {
 }
 
 // GET /users/:username/routines
-export const getUserRoutines = async(username) => {
+export const getUserRoutines = async(username, token) => {
     try {
         const resp = await fetch(`${API}/users/${username}/routines`, {
             headers: {
@@ -83,7 +82,7 @@ export const getUserRoutines = async(username) => {
 // GET /activities
 export const getAllActivities = async() => {
     try {
-        const resp = await fetch(`${API}/activities`,{
+        const resp = await fetch(`${API}/api/activities`,{
             headers: {
                 'Content-Type': 'application/json'
             }

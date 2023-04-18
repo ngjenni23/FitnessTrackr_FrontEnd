@@ -1,0 +1,69 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+}
+
+.mainContainer {
+    display: flex;
+    flex-direction: column;
+
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    color: white;
+}
+
+.navContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.navContainer * {
+    margin-right: 20px;
+}
+
+a:active {
+    text-decoration: none;
+    color: black;
+}
+
+
+
+a:link {
+    text-decoration: none;
+    color: black;
+}
+
+a:visited {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    text-decoration: underline black;
+    color: black;
+}
+
+.activitiesHeader {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.activities {
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 0 10px 5px 10px;
+    margin: 10px;
+}

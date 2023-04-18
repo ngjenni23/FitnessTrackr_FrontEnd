@@ -24,7 +24,7 @@ const Register = ({token, setToken, user, setUser}) => {
     }
     return (
         <form onSubmit={handleSubmit} className="register">
-            <p>Create Account</p>
+            <h1>Create Account</h1>
             <input type="text" placeholder="Username" onChange={event => setUsername(event.target.value)}/>
             <input type="text" placeholder="Password" onChange={event => setPassword(event.target.value)}/>
             <button type="submit">Register</button>

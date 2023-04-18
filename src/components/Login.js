@@ -1,30 +1,33 @@
 import React, { useState } from "react";
 import { loginUser } from "../api";
 import { useNavigate } from "react-router";
+         
 
-const Login = ({token, setToken, user, setUser}) => {
+const Login = (props) => {
+    const {setIsLoggedIn, setLoggedInUser, setUserId} = props;
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate();
-
-    const handleSubmit = async event => {
+    
+    const handleLogin = async(event) => {
         event.preventDefault();
-        const userObj = await loginUser({
-            username,
+        const result = await loginUser(
+            username, 
             password
-        });
-        console.log("login:", userObj.token, userObj.user.username);
-        setToken(userObj.token);
-        setUser(userObj.user.username);
-        if(userObj.token){
-            navigate('/')
+        )
+        if (result.token) {
+            setIsLoggedIn(true);
+            setLoggedInUser(username);
+            setUserId(result.user.id)
+        } else {
+            alert(`Username or Password is incorrect.`);
         }
     }
+
     return(
-        <form onSubmit={handleSubmit} className="login">
-            <p>Login</p>
-            <input type="text" placeholder="Username" onChange={event => setUsername(event.target.value)}/>
-            <imput type="text" placeholder="Password" onChange={event => setPassword(event.target.value)}/>
+       <form onSubmit={handleLogin} className="login">
+            <h1>Login</h1>
+            <input type="text" placeholder="Username" value={username} onChange={event => setUsername(event.target.value)}></input>
+            <input type="text" placeholder="Password" value={password} onChange={event => setPassword(event.target.value)}></input>
             <button type="submit">Login</button>
         </form>
     )
