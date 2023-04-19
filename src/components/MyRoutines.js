@@ -3,7 +3,7 @@ import { getUserRoutines, deleteRoutine, deleteRoutineActivity, updateRoutine, u
 import { useNavigate } from "react-router-dom";
 
 const MyRoutines = (props) => {
-    const {isLoggedIn, loggedInUser} = props;
+    const {loggedInUser} = props;
     const {myRoutines, setMyRoutines} = useState([]);
     const [selectedRoutine, setSelectedRoutine] = useState(null);
     const [name, setName] = useState('');

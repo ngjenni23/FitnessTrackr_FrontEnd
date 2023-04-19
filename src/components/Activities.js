@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { createActivity, getAllActivities, updateActivity } from "../api";
 
-const Activities = (props) => {
-    const { allActivities, setAllActivities } = props;
+const Activities = () => {
+    const [allActivities, setAllActivities] = useState([]);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
 
@@ -14,7 +14,7 @@ const Activities = (props) => {
             setAllActivities(result);
         }
         fetchActivities();
-    }, [setAllActivities]);
+    }, []);
     console.log("show activities");
 
     const handleAddActivity = async(event) => {

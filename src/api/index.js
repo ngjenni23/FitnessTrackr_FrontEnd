@@ -82,7 +82,7 @@ export const getUserRoutines = async(username, token) => {
 // GET /activities
 export const getAllActivities = async() => {
     try {
-        const resp = await fetch(`${API}/api/activities`,{
+        const resp = await fetch(`${API}/activities`,{
             headers: {
                 'Content-Type': 'application/json'
             }
