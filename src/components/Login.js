@@ -16,6 +16,7 @@ const Login = ({ token, setToken, user, setUser }) => {
         console.log("Username and token:", result.user.username, result.token);
         window.localStorage.setItem('token', result.token);
         window.localStorage.setItem('username', result.user.username);
+        window.location.assign('/MyRoutines');
         setToken(result.token);
         setUser(result.user.username);
         window.alert("Sucessfully logged in!");
