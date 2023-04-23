@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { createActivity, getAllActivities, updateActivity } from "../api";
+import { createActivity, getAllActivities } from "../api";
 
-const Activities = () => {
+const Activities = ({ token }) => {
     const [allActivities, setAllActivities] = useState([]);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -19,23 +19,18 @@ const Activities = () => {
 
     const handleAddActivity = async(event) => {
         event.preventDefault();
-        const result = await createActivity(
+        const result = {
             name, 
             description
-        )
-        if (result.error) {
-            alert(`${name} already exists.`)
-            return;
         }
-        alert(`${name} sucessfully created!`)
-    }
-
-     const handleUpdateActivity = async(event) => {
-        event.preventDefault();
-        const result = await updateActivity(
-            name, 
-            description
-        )
+        await createActivity(result, token)
+        if (result.error) {
+            window.alert(`${name} already exists.`)
+            return;
+        } else if (!token){
+            window.alert("Must be logged in to create an activity.")
+        }
+        window.alert(`${name} sucessfully created!`)
     }
 
     return( 
@@ -51,16 +46,10 @@ const Activities = () => {
                     <button type="submit">Create Activity</button>
                 </form>
             </div>
-            { allActivities.map(activity => (
+            { allActivities.map((activity) => (
                 <div className="activities">
-                    <h2>Activity Name: {activity.name} </h2>
-                    <p>Description: {activity.description} </p>
-                    <form onSubmit={handleUpdateActivity}>
-                        <h3>Update Activity</h3>
-                        <input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)}/>
-                        <input type="text" placeholder="Description" value={description} onChange={(event) => setDescription(event.target.value)}/>
-                        <button type="submit">Update</button>
-                    </form>
+                    <h2>{activity.name} </h2>
+                    <p>{activity.description} </p>
                 </div>
             ))}
         </div>

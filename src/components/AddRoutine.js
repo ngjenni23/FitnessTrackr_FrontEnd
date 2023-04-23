@@ -1,40 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { createRoutine } from '../api';
+import { useNavigate } from 'react-router-dom';
 
-const AddRoutine = (props) => {
-    const {isLoggedIn} = props;
+const AddRoutine = () => {
     const [name, setName] = useState('');
     const [goal, setGoal] = useState('');
     const [isPublic, setIsPublic] = useState(false);
+    const navigate = useNavigate();
+    const token = window.localStorage.getItem('token');
 
 
     const handleAddRoutine = async(event) => {
         event.preventDefault();
-        const result = await createRoutine(
+        const result = {
             name,
             goal,
-            isPublic ? true : false
-        )
-    }
-
-    function handleIsPublic() {
-        setIsPublic(!isPublic)
-    }
-
-    useEffect(() => {
-        if (!isLoggedIn) {
-            alert(`Must be logged in to create a routine.`)
+            isPublic
         }
-    }, [isLoggedIn]);
+        
+        await createRoutine(result, token);
+        if (token === null) {
+            window.alert('You must be logged in to create a routine.');
+            navigate('/Login');
+        } 
+        window.alert('Sucessfully created routine!')
+    }
+
 
     return (
-        <form onSubmit={handleAddRoutine}>
-            <h1>Create New Routine</h1>
+        <form onSubmit={handleAddRoutine} className='newRoutine'>
+            <h3>Create New Routine</h3>
             <input type='text' placeholder='Name' onChange={(event) => setName(event.target.value)}/>
             <input type='text' placeholder='Goal' onChange={(event) => setGoal(event.target.value)}/>
-            <p>Make Routine Public?</p>
-            <input type='radio' name='Yes' onChange={handleIsPublic}/>
-            <button type='submit'>Submit</button>
+            <div className='isPublic'>
+                <p>Make Routine Public?</p>
+                <p>Yes</p>
+                <input type='checkbox' onChange={event => setIsPublic(true)}/>
+                <p>No</p>
+                <input type='checkbox' onChange={event => setIsPublic(false)}/>
+            </div>
+            <button type='submit'>Create Routine</button>
         </form>
     )
 }

@@ -2,7 +2,10 @@ import { API } from '../config';
 const token = localStorage.getItem('jwt');
 
 //  POST /users/register
-export const registerUser = async(username, password) => {
+export const registerUser = async(credentials) => {
+    console.log("From api:", credentials)
+    const { username, password } = credentials.user;
+    console.log("Username and password", username, password)
     try {
         const resp = await fetch(`${API}/users/register`, {
             method: 'POST',
@@ -10,12 +13,18 @@ export const registerUser = async(username, password) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username,
-                password
+                username: username,
+                password: password
             })
         })
         const result = await resp.json();
-        console.log("register:", result);
+        console.log("Register:", result);
+        if (result.error === "Duplicate Username") {
+            window.alert("Username is taken")
+        }
+        if (result.error === "Short password") {
+            window.alert("Password is too short");
+        }
         return result;
     } catch (err) {
         console.error(err);
@@ -24,20 +33,25 @@ export const registerUser = async(username, password) => {
 
 //  POST /users/login
 export const loginUser = async(credentials) => {
+
     try{
+        console.log("From api", credentials)
         const resp = await fetch(`${API}/users/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
+            body: JSON.stringify(
                 credentials
-            })
+            )
         })
         const result = await resp.json();
         console.log("login:", result);
-        if (result && result.token) {
-
+        if (result.error === "User does not exist") {
+            window.alert("Username does not exist.")
+        }
+        if (result.message === "Password is incorrect") {
+            window.alert("Password is incorrect")
         }
         return result;
     } catch(err) {
@@ -63,16 +77,19 @@ export const getMyData = async() => {
 }
 
 // GET /users/:username/routines
-export const getUserRoutines = async(username, token) => {
+export const getUserRoutines = async( username, token ) => {
     try {
-        const resp = await fetch(`${API}/users/${username}/routines`, {
+        const resp = await fetch(`${API}/users/${username}/allroutines`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         })
-        const result = resp.json();
-        console.log("routines:", result);
+        const result = await resp.json();
+        console.log("API User routines:", result);
+        if(result.error) {
+            throw result.error;
+        }
         return result;
     } catch(err) {
         console.error(err);
@@ -96,22 +113,25 @@ export const getAllActivities = async() => {
 }
 
 // POST /activities
-export const createActivity = async(name, description) => {
+export const createActivity = async(postObj, userToken) => {
     try {
         const resp = await fetch(`${API}/activities`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${userToken}`
             },
-            body: JSON.stringify({
-                name,
-                description
-            }),
+            body: JSON.stringify(
+                postObj
+            ),
         })
         const result = await resp.json();
-        console.log("createActivit:", result);
-        return result;
+        console.log("createActivity:", result);
+        if (result.error === "Name already exists") {
+            window.alert("An activity with that name already exists")
+        } else {
+            return result;
+        }
     } catch(err) {
         console.error(err);
     }
@@ -172,19 +192,17 @@ export const getPublicRoutines = async() => {
 }
 
 // POST /routines
-export const createRoutine = async(name, goal, isPublic) => {
+export const createRoutine = async(postObj, userToken) => {
     try {
     const resp = await fetch(`${API}/routines`, {
       method: "POST",
       headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${userToken}`
       },
-      body: JSON.stringify({
-        name,
-        goal,
-        isPublic
-      })
+      body: JSON.stringify(
+        postObj
+      )
     });
     const result = await resp.json();
     console.log("createRoutine:",result);
@@ -195,7 +213,7 @@ export const createRoutine = async(name, goal, isPublic) => {
 }
 
 // PATCH /routines/:routineId
-export const updateRoutine = async(routineId, name, goal) => {
+export const updateRoutine = async( routineId, obj, token ) => {
     try {
       const resp = await fetch(`${API}/routines/${routineId}`, {
         method: "PATCH",
@@ -203,10 +221,9 @@ export const updateRoutine = async(routineId, name, goal) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          name,
-          goal
-        })
+        body: JSON.stringify(
+            obj
+        )
       });
       const result = await resp.json();
       console.log("updateRoutine:",result);
@@ -217,7 +234,7 @@ export const updateRoutine = async(routineId, name, goal) => {
 }
 
 // DELETE /routines/:routineId
-export const deleteRoutine = async(routineId) => {
+export const deleteRoutine = async( routineId, token ) => {
     try {
       const resp = await fetch(`${API}/routines/${routineId}`, {
         method: "DELETE",
@@ -235,18 +252,16 @@ export const deleteRoutine = async(routineId) => {
 }
 
 // POST /routines/:routineId/activities
-export const attachActivityToRoutine = async(routineId, activityId, count, duration) => {
+export const attachActivityToRoutine = async(routineId, obj) => {
     try {
       const resp = await fetch(`${API}/routines/${routineId}/activities`, {
         method: "POST",
         headers: {
         'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          activityId,
-          count,
-          duration
-        })
+        body: JSON.stringify(
+          obj
+        )
       });
       const result = await resp.json();
       console.log("attachActivityToRoutine:", result);
@@ -257,7 +272,7 @@ export const attachActivityToRoutine = async(routineId, activityId, count, durat
 }
 
 // PATCH /routine_activities/:routineActivityId
-export const updateCountOrDuration = async(routineActivityId, count, duration) => {
+export const updateCountOrDuration = async( routineActivityId, obj, token ) => {
     try {
       const resp = await fetch(`${API}/routine_activities/${routineActivityId}`, {
         method: "PATCH",
@@ -265,10 +280,9 @@ export const updateCountOrDuration = async(routineActivityId, count, duration) =
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          count,
-          duration,
-        })
+        body: JSON.stringify(
+            obj
+        )
       });
       const result = await resp.json();
       console.log("updateCountOrDuration:", result);
@@ -279,7 +293,7 @@ export const updateCountOrDuration = async(routineActivityId, count, duration) =
 }
 
 // DELETE /routine_activities/:routineActivityId
-export const deleteRoutineActivity = async(routineActivityId) => {
+export const deleteRoutineActivity = async( routineActivityId, token ) => {
     try {
     const resp = await fetch(`${API}/routine_activities/${routineActivityId}`, {
         method: 'DELETE',

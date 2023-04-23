@@ -1,113 +1,165 @@
 import React, { useEffect, useState } from "react";
-import { getUserRoutines, deleteRoutine, deleteRoutineActivity, updateRoutine, updateCountOrDuration } from "../api";
-import { useNavigate } from "react-router-dom";
+import { getUserRoutines, 
+    getAllActivities, 
+    attachActivityToRoutine, 
+    deleteRoutine, 
+    updateRoutine, 
+    updateCountOrDuration, 
+    deleteRoutineActivity 
+} from "../api";
+import AddRoutine from "./AddRoutine";
 
-const MyRoutines = (props) => {
-    const {loggedInUser} = props;
-    const {myRoutines, setMyRoutines} = useState([]);
-    const [selectedRoutine, setSelectedRoutine] = useState(null);
-    const [name, setName] = useState('');
-    const [goal, setGoal] = useState('');
-    const [isPublic, setIsPublic] = useState(false);
-    const [count, setCount] = useState('');
-    const [duration, setDuration] = useState('');
-    const navigate = useNavigate();
+const MyRoutines = ({ user }) => {
+    const [ routines, setRoutines ] = useState([]);
+    const [ routineId, setRoutineId ] = useState();
+    const [ open, setOpen ] = useState(false);
+    const [ activities, setActivities ] = useState([]);
+    const [ activityId, setActivityId] = useState();
+    const [ routineActivityId, setRoutineActivityId ] = useState();
+    const [ name, setName ] = useState('');
+    const [ goal, setGoal ] = useState('');
+    const [ isPublic, setIsPublic ] = useState(false);
+    const [ count, setCount ] = useState('');
+    const [ duration, setDuration ] = useState('');
+
+    const token = window.localStorage.getItem('token');
 
     useEffect(() => {
     const fetchMyRoutines = async () => {
-        const result = await getUserRoutines(loggedInUser);
-        setMyRoutines(result);
-    };
-    fetchMyRoutines();
-    }, [loggedInUser, setMyRoutines]);
+        const routineResult = await getUserRoutines(user, token);
+        setRoutines(routineResult);
 
-    const handleDeleteRoutine = async(routineId) => {
-        await deleteRoutine(routineId);
-        setMyRoutines(myRoutines.filter((routine) => routine.id !== routineId));
+        const activityResult = await getAllActivities();
+        setActivities(activityResult)
+
+        console.log("User routines", routines);
+        console.log("Username and token:", user.username, token)
+    };
+   
+    fetchMyRoutines();
+    }, []);
+
+    function handleOpen() {
+        setOpen(!open);
+    }
+
+    const handleAttachActivityToRoutine = async event => {
+        event.preventDefault();
+        setActivityId(event.target[3].value);
+        setRoutineId(event.target[4].value);
+
+        const result = {
+            activityId, count, duration
+        }
+
+        await attachActivityToRoutine(routineId, result);
+    }
+
+    const handleDeleteRoutine = async event => {
+        event.preventDefault();
+        setRoutineId(event.target[1].value);
+        await deleteRoutine(routineId, token);
    };
 
-    const handleDeleteRoutineActivity = async(routineActivityId) => {
-        const result = await deleteRoutineActivity(routineActivityId);
-        setMyRoutines(myRoutines.map((routine) => {
-        if (routine.id === selectedRoutine) {
-            return {
-                ...routine,
-                activities: routine.activities.filter((activity) => activity.routineActivityId !== routineActivityId)
-            }
-        } else {
-            return routine;
-        }
-        }))
+    const handleDeleteRoutineActivity = async event => {
+        event.preventDefault();
+        setRoutineActivityId(event.target[1].value);
+        await deleteRoutineActivity(routineActivityId, token);
     }
     
-    const handleUpdateRoutine = async(routineId) => {
-        const result = await updateRoutine(
+    const handleUpdateCountOrDuration = async event => {
+        event.preventDefault();
+        setRoutineActivityId(event.target[3].value);
+        const result = {
+            count, 
+            duration
+        }
+        await updateCountOrDuration(routineActivityId, result, token)
+    }
+
+    const handleUpdateRoutine = async event => {
+        event.preventDefault();
+        const result = {
             name, 
             goal, 
             isPublic
-        )
-    }
-
-    const handleUpdateRoutineActivity = async(routineActivityId) => {
-        const result = await updateCountOrDuration(
-            count, 
-            duration
-        )
-    }
-
-    function handleIsPublic() {
-        setIsPublic(!isPublic)
+        }
+        await updateRoutine(routineId, result, token)
     }
     
-    return  (
+    return routines === [] ? routines.map((routine) => (
         <div>
-            <div>
-                <h1>My Routines</h1>
-                <button onClick={() => navigate('/AddRoutine')}> Create a new Routine </button>
+            <div className="newRoutine">
+                <AddRoutine/>
             </div>
-        { myRoutines.map((routine) => (
-            <div className='routinesContainer' key={routine.id}>
+            <div key={routine.id} className="routine">
+                <h3>{routine.name} by {routine.creatorName} </h3>
                 <div>
-                 <h3>{routine.name} by {routine.creatorName}</h3> 
-                <p>Goal: {routine.goal} </p>
-                <form onSubmit={handleUpdateRoutine}>
-                    <h3>Update Routine</h3>
-                    <input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)}/>
-                    <input type="text" placeholder="Goal" value={goal} onChange={(event) => setGoal(event.target.value)}/>
-                    <p>Make Routine Public?</p>
-                        <input type='radio' name='Yes' onChange={handleIsPublic}/>
-                    <button type='submit'>Update</button>
+                    <form onSubmit={handleUpdateRoutine}>
+                        <input type="text" placeholder="Name" onChange={event => setName(event.target.value)} />
+                        <input type="text" placeholder="Goal" onChange={event => setGoal(event.target.value)} />
+                        <p>Make Routine Public?</p>
+                        <p>Yes</p>
+                        <input type="checkbox" onChange={event => setIsPublic(true)}/>
+                        <p>No</p>
+                        <input type="checkbox" onChange={event => setIsPublic(false)}/>
+                        <button type="submit">Click TWICE to Update Routine</button>
+                        <input value={routine.id} className="hidden"></input>
+                    </form>
+                </div>
+                <form onSubmit={handleDeleteRoutine}>
+                    <button type="submit">Click TWICE to Delete Routine</button>
+                    <input value={routine.id} class="hidden"></input>
                 </form>
-                <button onClick={() => handleDeleteRoutine(routine.id)}>Delete routine</button>
-                <button onClick={() => navigate(`/AddRoutineActivity/${routine.id}`)}>Add Routine Activity </button>
-                <button onClick={() => setSelectedRoutine(selectedRoutine === routine.id ? null : routine.id)}>
-                    {selectedRoutine === routine.id ? "Hide activities" : "Show activities"}
-                </button>
-                    {selectedRoutine === routine.id && (
-                        <div>
-                            {routine.activities.map((activity) => (
-                                <div  key={activity.routineActivityId}>
-                                    <h3>{activity.name}</h3>
-                                    <p>{activity.description}</p>
-                                    <p>Count: {activity.count} reps</p>
-                                    <p>Duration: {activity.duration} minutes</p>
-                                    <button onClick={() => handleDeleteRoutineActivity(activity.routineActivityId)}>Delete Routine Activity</button>
-
-                                    <form onSubmit={handleUpdateRoutineActivity}>
-                                        <h3>Update Count or Duration</h3>
-                                        <input placeholder="Count" value={count} onChange={(event) => setCount(event.target.value)}/>
-                                        <input placeholder="Duration" value={duration} onChange={(event) => setDuration(event.target.value)}/>
-                                        <button type="submit">Update</button>
-                                    </form>
-                                </div>
-                            ))}
+                <div>
+                <p>Is Public? {routine.isPublic ? "Yes" : "No"}</p> 
+                <p>Goal: {routine.goal}</p>
+                <div className="showActivities">
+                        <button onClick={{handleOpen}}>Show Activities</button>
+                    </div>
+                    <div>
+                        { open ? activities.map((activity) => (
+                        <div key={activity.id}>
+                            <form onSubmit={handleAttachActivityToRoutine}>
+                                <h4>{activity.name}</h4>
+                                <p>{activity.description}</p>
+                                <input type="number" placeholder="Count (reps)" onChange={event => setCount(event.target.value)}/>
+                                <input type="number" placeholder="Duration (minutes)" onChange={event => setDuration(event.target.value)}/>
+                                <button type="submit" Click TWICE to Attach Activity></button>
+                                <input value={activity.id} className="hidden"/>
+                                <input value={routine.id} className="hidden"/>
+                            </form>
                         </div>
-                    )}
+                        )) : null}
+                    </div>
+                </div>
+                <div>
+                    <h4>Activities</h4>
+                    {routine.activities.map((activity) => (
+                        <div key={activity.id}>
+                            <form onSubmit={handleDeleteRoutineActivity}>
+                                <button>Click TWICE To Delete Activity</button>
+                                <input value={activity.routineActivityId} className="hidden"/>
+                            </form>
+                            <h3>{activity.name}</h3>
+                            <p>{activity.description}</p>
+                            <p>{activity.count} reps</p>
+                            <p>{activity.duration} minutes</p>
+                            <form onSubmit={handleUpdateCountOrDuration}>
+                                <input type="number" placeholder="Count (reps)" onChange={event => setCount(event.target.value)} />
+                                <input type="number" placeholder="Duration (minutes)" onChange={event => setDuration(event.target.value)}/>
+                                <button type="submit">Click TWICE to Update Activity</button>
+                                <input value={activity.routineActivityId} className="hidden"/>
+                            </form>
+                        </div>
+                    ))}
                 </div>
             </div>
-        ))}
-    </div>
-    )
+        </div>
+    )) : <div className="noRoutines">
+            <div> <AddRoutine/> </div>
+            <h3> You have no routines.</h3>
+        </div>
 }
 
 export default MyRoutines

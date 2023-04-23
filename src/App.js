@@ -1,9 +1,8 @@
 import './App.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Activities,
         AddRoutine,
-        AddRoutineActivity,
         Header, 
         Login,
         MyRoutines,
@@ -13,25 +12,51 @@ import { Activities,
 } from './components';
 
 function App() {
-  const[isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState('');
-  const [allActivities, setAllActivities] = useState([]);
+  const [ token, setToken ] = useState('');
+  const [ user, setUser ] = useState('');
+  const [ isLoggedIn, setIsLoggedIn ] = useState(false)
+
+  useEffect(() => {
+      if (localStorage.getItem("token")) {
+          setIsLoggedIn(true);
+      }
+    }, []);
 
   return(
     <Router>
       <div className='mainContainer'>
-        <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} loggedInUser={loggedInUser} setLoggedInUser={setLoggedInUser} />
-        <Navbar isLoggedIn={isLoggedIn}/>
+        <Header />
+        <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           <div className='bodyContainer'>
             <Routes>
-                <Route path='/' element={<Activities allActivities={allActivities} setAllActivities={setAllActivities}/>}/>
-                <Route path='/Activities' element={<Activities allActivities={allActivities} setAllActivities={setAllActivities}/>}/>
-                <Route path='/AddRoutine' element={<AddRoutine isLoggedIn={isLoggedIn} loggedInUser={loggedInUser}/>}/>
-                <Route path='/AddRoutineActivity/:routineId' element={<AddRoutineActivity allActivities={allActivities} setAllActivities={setAllActivities}/>}/>
-                <Route path='/Routines' element={<Routines/>}/>
-                <Route path='/MyRoutines' element={<MyRoutines loggedInUser={loggedInUser} />}/>
-                <Route path='/Register' element={<Register/>}/>
-                <Route path='/Login' element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>}/>
+                <Route 
+                  path='/' 
+                  element={<Activities token={token} setToken={setToken} />}
+                />
+                <Route 
+                  path='/Activities' 
+                  element={<Activities token={token} setToken={setToken} />}
+                />
+                <Route 
+                  path='/AddRoutine' 
+                  element={<AddRoutine token={token} setToken={setToken}/>}
+                />
+                <Route 
+                  path='/Routines' 
+                  element={<Routines token={token} setToken={setToken}/>}
+                />
+                <Route 
+                  path='/MyRoutines' 
+                  element={<MyRoutines token={token} setToken={setToken} user={user} setUser={setUser}/>}
+                />
+                <Route 
+                  path='/Register' 
+                  element={<Register token={token} setToken={setToken} user={user} setUser={setUser}/>}
+                />
+                <Route 
+                  path='/Login' 
+                  element={<Login token={token} setToken={setToken} user={user} setUser={setUser}/>}
+                />
             </Routes>
           </div>
       </div>
