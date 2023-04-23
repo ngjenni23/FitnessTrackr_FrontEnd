@@ -34,24 +34,28 @@ const Activities = ({ token }) => {
     }
 
     return( 
-        <div>
-            <div className="activitiesHeader">
+        <div classname="activitiesMain">
+            <div>
                 <h1 className="activitiesHeader">
                     Activities
                 </h1>
                 <form className="newActivityForm" onSubmit={handleAddActivity}>
                     <h3>Create New Activity</h3>
-                    <input type="text" placeholder="Name" onChange={event => setName(event.target.value)}/>
-                    <input type="text" placeholder="Description" onChange={event => setDescription(event.target.value)}/>
-                    <button type="submit">Create Activity</button>
+                    <span>
+                        <input type="text" placeholder="Name" onChange={event => setName(event.target.value)}/>
+                        <input type="text" placeholder="Description" onChange={event => setDescription(event.target.value)}/>
+                        <button type="submit">Create Activity</button>
+                    </span>
                 </form>
             </div>
-            { allActivities.map((activity) => (
-                <div className="activities">
-                    <h2>{activity.name} </h2>
-                    <p>{activity.description} </p>
-                </div>
-            ))}
+            <div className="activitiesContainer">
+                { allActivities.map((activity) => (
+                    <div className="activities">
+                        <h2>{activity.name}</h2>
+                        <p>{activity.description} </p>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }

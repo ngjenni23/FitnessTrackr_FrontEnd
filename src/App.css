@@ -26,6 +26,7 @@ header {
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    border-bottom: 10px solid black;
 }
 
 .navContainer * {
@@ -36,8 +37,6 @@ a:active {
     text-decoration: none;
     color: black;
 }
-
-
 
 a:link {
     text-decoration: none;
@@ -54,7 +53,19 @@ a:hover {
     color: black;
 }
 
-.activitiesHeader {
+.activitiesMain {
+    display: flex;
+    flex-direction: column;
+}
+
+.activitiesHeader, .newActivityForm, .newRoutine, .myRoutines {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.activitiesContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -65,16 +76,48 @@ a:hover {
     border: 1px solid black;
     border-radius: 10px;
     padding: 0 10px 5px 10px;
+    width: 700px;
     margin: 10px;
 }
+
+.pubRoutinesContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.pubroutines {
+    width: 700px;
+}
+
+.pubRoutineActivities {
+    margin-top: 20px;
+    border-top: 1px solid black;
+}
+
 
 .routine {
     border: 1px solid black;
     border-radius: 10px;
     padding: 0 10px 5px 10px;
     margin: 10px;
+    width: 700px;
 }
 
 .routineActivity {
     border-top: 1px solid black
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.newRoutine * {
+    margin-top: 5px;
+}
+
+.updateRoutine {
+    display: flex;
+    flex-direction: column;
 }

@@ -23,21 +23,22 @@ const AddRoutine = () => {
             window.alert('You must be logged in to create a routine.');
             navigate('/Login');
         } 
-        window.alert('Sucessfully created routine!')
+        window.alert('Sucessfully created routine! Please refresh page.')
     }
 
 
     return (
         <form onSubmit={handleAddRoutine} className='newRoutine'>
             <h3>Create New Routine</h3>
-            <input type='text' placeholder='Name' onChange={(event) => setName(event.target.value)}/>
-            <input type='text' placeholder='Goal' onChange={(event) => setGoal(event.target.value)}/>
+            <span>
+                <input type='text' placeholder='Name' onChange={(event) => setName(event.target.value)}/>
+                <input type='text' placeholder='Goal' onChange={(event) => setGoal(event.target.value)}/>
+            </span>
             <div className='isPublic'>
-                <p>Make Routine Public?</p>
-                <p>Yes</p>
-                <input type='checkbox' onChange={event => setIsPublic(true)}/>
-                <p>No</p>
-                <input type='checkbox' onChange={event => setIsPublic(false)}/>
+                <span> Make Routine Public?
+                    Yes <input type='checkbox' onChange={event => setIsPublic(true)}/> 
+                    No <input type='checkbox' onChange={event => setIsPublic(false)}/>
+                </span>
             </div>
             <button type='submit'>Create Routine</button>
         </form>
