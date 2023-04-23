@@ -61,7 +61,6 @@ const MyRoutines = () => {
         event.preventDefault();
         setRoutineId(event.target[1].value);
 
-        window.alert("Successfully deleted routine! Please refresh page.");
         await deleteRoutine(routineId, token);
    };
 
@@ -69,7 +68,6 @@ const MyRoutines = () => {
         event.preventDefault();
         setRoutineActivityId(event.target[1].value);
 
-        window.alert("Successfully deleted routine activity! Please refresh page.")
         await deleteRoutineActivity(routineActivityId, token);
     }
     

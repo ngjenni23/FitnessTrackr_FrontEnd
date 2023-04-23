@@ -29,8 +29,9 @@ const Activities = ({ token }) => {
             return;
         } else if (!token){
             window.alert("Must be logged in to create an activity.")
-        }
-        window.alert(`${name} sucessfully created!`)
+        } else {window.alert('Activity sucessfully created! Please refresh the page.')
+    }
+        
     }
 
     return( 
